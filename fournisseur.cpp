@@ -44,6 +44,8 @@ query.prepare ("DELETE from fournisseur where idF=:IdF");
 query.bindValue (0, idF);
 return query.exec ();
 }
+
+
 QSqlQueryModel* Fournisseur::afficher()
 {
 
