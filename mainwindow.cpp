@@ -1,14 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "fournisseur.h"
+#include "commande.h"
 #include <QMessageBox>
+#include <QIntValidator>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->tab_fournisseur->setModel(F.afficher());
+    ui->N_fact->setValidator (new QIntValidator (0,9999,this));
+    ui->num_fact2->setValidator (new QIntValidator (0,9999,this));
+    ui->tab_com->setModel(C.afficher());
 }
 
 MainWindow::~MainWindow()
@@ -16,108 +19,66 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
-
-void MainWindow::on_ajouter_clicked()
+void MainWindow::on_pushButton_2_clicked()
 {
-    int idF=ui->id->text().toInt();
-    QString Nom=ui->nom->text();
-    int num_tel=ui->num_tel->text().toInt();
-    QString E_mail=ui->e_mail->text();
-            Fournisseur F(idF,Nom,num_tel,E_mail);
-    bool test=F.ajouter();
+    int NUM_FACTURE=ui->N_fact->text().toInt();
+    int QTE_PRODUIT=ui->Qte->text().toUInt();
+    QString DATE_ACHAT=ui->Dt_ach->text();
+    Commande C(NUM_FACTURE,QTE_PRODUIT,DATE_ACHAT);
+    bool test=C.ajouter();
     QMessageBox msgBox;
-    if (test)
-    {
-        ui->tab_fournisseur->setModel(F.afficher());
-        msgBox.setText("ajout avec succes");
-}
-    else
-        msgBox.setText("Echec");
-        msgBox.exec();
-}
-
-
-
-void MainWindow::on_supprimer_clicked()
-{
-Fournisseur F1; F1.setidF(ui->id_sup->text().toInt());
-bool test=F1.supprimer(F1.getidF());
-
-        QMessageBox msgBox;
         if (test)
         {
-        msgBox.setText("Succes");
-        ui->tab_fournisseur->setModel(F.afficher());
+            msgBox.setText("ajouter avec succes");
+            ui->tab_com->setModel(C.afficher());
+            ui->Qte->clear();
+            ui->N_fact->clear();
+            ui->Dt_ach->clear();
         }
         else
             msgBox.setText("Echec");
             msgBox.exec();
 }
 
+void MainWindow::on_supprimer_clicked()
+{
+    Commande C1; C1.setNUM_FACTURE(ui->num_sup->text().toUInt());
+    bool test=C1.supprimer(C1.getNUM_FACTURE());
+    QMessageBox msgBox;
+        if (test)
+        {
+            msgBox.setText("supprimer avec succes");
+            ui->tab_com->setModel(C.afficher());
+            ui->num_sup->clear();
+        }
+        else
+            msgBox.setText("Echec");
+            msgBox.exec();
+}
 
 void MainWindow::on_modifier_clicked()
 {
-    int idF=ui->id_3->text().toInt();
-    QString Nom=ui->nom_3->text();
-    int num_tel=ui->num_tel_2->text().toInt();
-    QString E_mail=ui->mail_2->text();
-
-
- Fournisseur f (idF,Nom,num_tel,E_mail);
-
-
-     {
-     bool test=f.modifier(idF,Nom,num_tel,E_mail);
-      if(test)
-     {
-
-           ui->tab_fournisseur->setModel(f.afficher());
-     QMessageBox::information(nullptr, QObject::tr("modifier "),
-                       QObject::tr("Modification effectuée.\n"
-                                   "Click Cancel to exit."), QMessageBox::Cancel);
-     ui->statusbar->showMessage("compte modifié");
-//     d.notifications_modifierdemande();
-     }
-       else
-         {  QMessageBox::critical(nullptr, QObject::tr("modifier "),
-                       QObject::tr("Echec de la modification  \n"
-                                   "Click Cancel to exit."), QMessageBox::Cancel);
-      ui->statusbar->showMessage("compte non modifié");
-}
-}
+    int NUM_FACTURE=ui->num_fact2->text().toInt();
+    QString DATE_ACHAT=ui->Dt_ach2->text();
+    int QTE_PRODUIT=ui->Qte2->text().toInt();
+    //Commande C(NUM_FACTURE,DATE_ACHAT,QTE_PRODUIT);
+    Commande C(NUM_FACTURE,QTE_PRODUIT,DATE_ACHAT);
+    {
+        bool test=C.modifier(NUM_FACTURE,QTE_PRODUIT,DATE_ACHAT);
+        QMessageBox msgBox;
+        if (test)
+        {
+            ui->tab_com->setModel(C.afficher());
+            msgBox.setText("modifier avec succes");
+            ui->Qte2->clear();
+            ui->num_fact2->clear();
+            ui->Dt_ach2->clear();
+        }
+        else
+            msgBox.setText("Echec");
+            msgBox.exec();
 }
 
-
-
-
-
-
-void MainWindow::on_pushButton_4_clicked()
-{
-    Fournisseur f;
-
-        int idF=ui->id_rech->text().toInt();
-
-
-             bool test=f.chercher(idF);
-
-             if(test)
-             {
-                 QMessageBox::information(nullptr, QObject::tr("Recherche"),
-                                         QObject::tr("fournisseur a chercher existe\n"
-                                                     "Cliquez sur cancel Pour Quitter."), QMessageBox::Cancel);
-             ui->statusbar->showMessage("recherche terminée");
-             //d.notifications_trouverdemande();
-             }
-             else
-             {  QMessageBox::warning(nullptr, QObject::tr("erreur"),
-                                     QObject::tr("Echec de la recherche.\n"
-                                                 "Click Cancel to exit."), QMessageBox::Cancel);}
-}
-
-
-
-
+    }
 
 
